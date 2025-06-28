@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EarnNex - Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .login-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+      text-align: center;
+      width: 320px;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+      color: #4a90e2;
+    }
+    button {
+      background: #4a90e2;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 100%;
+    }
+    button:hover {
+      background: #357ABD;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <div class="login-box">
+    <h1>EarnNex Login</h1>
+    <button id="loginBtn">Login with Google</button>
+    <div id="errorMsg" class="error"></div>
+  </div>
+
+  <script>
+    // Firebase config from your Firebase project
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    loginBtn.addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          // Save user info to localStorage
+          localStorage.setItem('earnNexUser', JSON.stringify({
+            uid: user.uid,
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+          }));
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        })
+        .catch((error) => {
+          errorMsg.textContent = error.message;
+        });
+    });
+
+    // If user already logged in, redirect to dashboard
+    auth.onAuthStateChanged(user => {
+      if(user) {
+        window.location.href = 'dashboard.html';
+      }
+    });
+  </script>
+</body>
+</html>

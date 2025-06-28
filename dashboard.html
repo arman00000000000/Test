@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EarnNex - Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 1rem;
+      color: #333;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .user-info img {
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+    }
+    h1 {
+      color: #4a90e2;
+      margin: 0;
+    }
+    .coin-balance {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      font-weight: bold;
+    }
+    button {
+      background: #4a90e2;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #357ABD;
+    }
+    .section {
+      margin-top: 1.5rem;
+    }
+    .referral {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
+      max-width: 400px;
+    }
+    input.referral-link {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <header>
+    <h1>EarnNex Dashboard</h1>
+    <div class="user-info">
+      <img id="userPhoto" src="" alt="User Photo" />
+      <span id="userName"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div>
+    <div class="coin-balance">Coins: <span id="coinCount">0</span></div>
+    <button id="dailyBonusBtn">Claim Daily Bonus (10 coins)</button>
+  </div>
+
+  <div class="section referral">
+    <h2>Your Referral Link</h2>
+    <input type="text" readonly id="referralLink" class="referral-link" />
+    <button id="copyReferralBtn">Copy Link</button>
+  </div>
+
+  <script>
+    // Firebase config same as login page
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Simulated coin count (in real app, get from DB)
+    let coins = 0;
+    let dailyBonusClaimed = false;
+
+    const userPhoto = document.getElementById('userPhoto');
+    const userName = document.getElementById('userName');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const coinCount = document.getElementById('coinCount');
+    const dailyBonusBtn = document.getElementById('dailyBonusBtn');
+    const referralLink = document.getElementById('referralLink');
+    const copyReferralBtn = document.getElementById('copyReferralBtn');
+
+    // Load user info from localStorage
+    const user = JSON.parse(localStorage.getItem('earnNexUser'));
+    if (!user) {
+      window.location.href = 'index.html';
+    } else {
+      userPhoto.src = user.photoURL;
+      userName.textContent = user.name;
+      // Load coins from localStorage or default 0
+      coins = Number(localStorage.getItem('earnNexCoins_' + user.uid)) || 0;
+      coinCount.textContent = coins;
+
+      // Referral link (example)
+      referralLink.value = window.location.origin + '/index.html?ref=' + user.uid;
+    }
+
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        localStorage.removeItem('earnNexUser');
+        localStorage.removeItem('earnNexCoins_' + user.uid);
+        window.location.href = 'index.html';
+      });
+    });
+
+    dailyBonusBtn.addEventListener('click', () => {
+      const lastClaim = localStorage.getItem('earnNexDailyBonus_' + user.uid);
+      const today = new Date().toDateString();
+      if (lastClaim === today) {
+        alert('You already claimed today\'s bonus!');
+        return;
+      }
+      coins += 10;
+      coinCount.textContent = coins;
+      localStorage.setItem('earnNexCoins_' + user.uid, coins);
+      localStorage.setItem('earnNexDailyBonus_' + user.uid, today);
+      alert('Daily bonus 10 coins added!');
+    });
+
+    copyReferralBtn.addEventListener('click', () => {
+      referralLink.select();
+      referralLink.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      alert('Referral link copied to clipboard!');
+    });
+  </script>
+</body>
+</html>
