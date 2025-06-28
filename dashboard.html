@@ -3,164 +3,784 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EarnNex - Dashboard</title>
+  <title>EarnNex - Survey Dashboard</title>
   <style>
+    :root {
+      --primary: #4a90e2;
+      --secondary: #6c757d;
+      --success: #28a745;
+      --danger: #dc3545;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+    
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #f5f7fa;
       margin: 0;
-      padding: 1rem;
+      padding: 0;
       color: #333;
+      line-height: 1.6;
     }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+    
     header {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 2rem;
     }
+    
     .user-info {
       display: flex;
       align-items: center;
       gap: 1rem;
     }
+    
     .user-info img {
       border-radius: 50%;
       width: 48px;
       height: 48px;
+      object-fit: cover;
     }
+    
     h1 {
-      color: #4a90e2;
+      color: var(--primary);
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+    }
+    
+    .sidebar {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      height: fit-content;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+      padding: 0;
       margin: 0;
     }
-    .coin-balance {
-      font-size: 1.5rem;
-      margin: 1rem 0;
-      font-weight: bold;
+    
+    .sidebar-menu li {
+      margin-bottom: 0.5rem;
     }
-    button {
-      background: #4a90e2;
-      border: none;
-      color: white;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
+    
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.75rem 1rem;
+      color: var(--secondary);
+      text-decoration: none;
       border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+      background: rgba(74, 144, 226, 0.1);
+      color: var(--primary);
+    }
+    
+    .sidebar-menu i {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .card-title {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--dark);
+    }
+    
+    .balance-card {
+      background: linear-gradient(135deg, #4a90e2, #5a6ae8);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    
+    .balance-amount {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    
+    .balance-label {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      border: none;
+      text-decoration: none;
     }
-    button:hover {
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
       background: #357ABD;
+      transform: translateY(-2px);
     }
-    .section {
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(74, 144, 226, 0.1);
+    }
+    
+    .survey-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .survey-card {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .survey-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .survey-image {
+      height: 120px;
+      background: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary);
+      font-size: 2rem;
+    }
+    
+    .survey-body {
+      padding: 1.5rem;
+    }
+    
+    .survey-title {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+      color: var(--dark);
+    }
+    
+    .survey-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: var(--secondary);
+    }
+    
+    .survey-reward {
+      color: var(--success);
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.35em 0.65em;
+      font-size: 0.75em;
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 50rem;
+    }
+    
+    .badge-primary {
+      color: #fff;
+      background-color: var(--primary);
+    }
+    
+    .badge-success {
+      color: #fff;
+      background-color: var(--success);
+    }
+    
+    .referral-box {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
       margin-top: 1.5rem;
     }
-    .referral {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgb(0 0 0 / 0.1);
-      max-width: 400px;
+    
+    .referral-link {
+      display: flex;
+      margin-top: 1rem;
     }
-    input.referral-link {
-      width: 100%;
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 5px;
+    
+    .referral-link input {
+      flex: 1;
+      padding: 0.75rem 1rem;
       border: 1px solid #ddd;
+      border-radius: 8px 0 0 8px;
+      font-size: 1rem;
+    }
+    
+    .referral-link button {
+      border-radius: 0 8px 8px 0;
+      border-left: none;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+      color: var(--primary);
+    }
+    
+    .stat-label {
+      color: var(--secondary);
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .survey-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header>
-    <h1>EarnNex Dashboard</h1>
-    <div class="user-info">
-      <img id="userPhoto" src="" alt="User Photo" />
-      <span id="userName"></span>
-      <button id="logoutBtn">Logout</button>
+    <div class="container header-content">
+      <h1>EarnNex</h1>
+      <div class="user-info">
+        <img id="userPhoto" src="https://ui-avatars.com/api/?name=User&background=4a90e2&color=fff" alt="User Photo" />
+        <span id="userName">User</span>
+        <button id="logoutBtn" class="btn btn-outline">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
     </div>
   </header>
 
-  <div>
-    <div class="coin-balance">Coins: <span id="coinCount">0</span></div>
-    <button id="dailyBonusBtn">Claim Daily Bonus (10 coins)</button>
-  </div>
-
-  <div class="section referral">
-    <h2>Your Referral Link</h2>
-    <input type="text" readonly id="referralLink" class="referral-link" />
-    <button id="copyReferralBtn">Copy Link</button>
+  <div class="container">
+    <div class="dashboard-grid">
+      <aside class="sidebar">
+        <ul class="sidebar-menu">
+          <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="#"><i class="fas fa-poll"></i> Surveys</a></li>
+          <li><a href="#"><i class="fas fa-wallet"></i> Earnings</a></li>
+          <li><a href="#"><i class="fas fa-gift"></i> Rewards</a></li>
+          <li><a href="#"><i class="fas fa-users"></i> Referrals</a></li>
+          <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+          <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+        
+        <div class="referral-box">
+          <h3>Invite Friends</h3>
+          <p>Earn 10% of your referrals' earnings</p>
+          <div class="referral-link">
+            <input type="text" id="referralLink" readonly value="https://earnnex.com/ref/12345" />
+            <button id="copyReferralBtn" class="btn btn-primary">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+      
+      <main class="main-content">
+        <div class="card balance-card">
+          <div>
+            <div class="balance-label">Total Balance</div>
+            <div class="balance-amount">$<span id="balanceAmount">25.50</span></div>
+            <div class="balance-label">≈ <span id="coinBalance">2550</span> coins</div>
+          </div>
+          <button class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.5)">
+            <i class="fas fa-arrow-up"></i> Withdraw
+          </button>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fas fa-poll fa-2x" style="color: var(--primary)"></i>
+            <div class="stat-value" id="totalSurveys">12</div>
+            <div class="stat-label">Surveys Completed</div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-coins fa-2x" style="color: var(--primary)"></i>
+            <div class="stat-value" id="totalEarnings">$25.50</div>
+            <div class="stat-label">Total Earnings</div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-users fa-2x" style="color: var(--primary)"></i>
+            <div class="stat-value" id="totalReferrals">5</div>
+            <div class="stat-label">Referrals</div>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-calendar-check fa-2x" style="color: var(--primary)"></i>
+            <div class="stat-value" id="streakDays">7</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Available Surveys</h2>
+            <button class="btn btn-primary">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+          
+          <div class="survey-list" id="surveyList">
+            <!-- Surveys will be loaded here -->
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Daily Bonus</h2>
+          </div>
+          <div style="text-align: center; padding: 2rem">
+            <div style="font-size: 1.2rem; margin-bottom: 1rem">
+              Claim your daily bonus to keep your streak!
+            </div>
+            <button id="dailyBonusBtn" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.2rem">
+              <i class="fas fa-gift"></i> Claim 50 Coins
+            </button>
+            <div style="margin-top: 1rem; color: var(--secondary)">
+              Current streak: <span id="streakCount">7</span> days
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
 
   <script>
-    // Firebase config same as login page
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyA9_epeOC-Vx74SOZIjOcmhQfwMht1c-T0",
       authDomain: "test-8cdc0.firebaseapp.com",
       projectId: "test-8cdc0",
-      storageBucket: "test-8cdc0.firebasestorage.app",
+      storageBucket: "test-8cdc0.appspot.com",
       messagingSenderId: "682390843472",
       appId: "1:682390843472:web:3ded333e3c230bc093e155"
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    // Simulated coin count (in real app, get from DB)
-    let coins = 0;
-    let dailyBonusClaimed = false;
-
+    // DOM elements
     const userPhoto = document.getElementById('userPhoto');
     const userName = document.getElementById('userName');
     const logoutBtn = document.getElementById('logoutBtn');
-    const coinCount = document.getElementById('coinCount');
+    const balanceAmount = document.getElementById('balanceAmount');
+    const coinBalance = document.getElementById('coinBalance');
+    const totalSurveys = document.getElementById('totalSurveys');
+    const totalEarnings = document.getElementById('totalEarnings');
+    const totalReferrals = document.getElementById('totalReferrals');
+    const streakDays = document.getElementById('streakDays');
+    const surveyList = document.getElementById('surveyList');
     const dailyBonusBtn = document.getElementById('dailyBonusBtn');
+    const streakCount = document.getElementById('streakCount');
     const referralLink = document.getElementById('referralLink');
     const copyReferralBtn = document.getElementById('copyReferralBtn');
 
-    // Load user info from localStorage
-    const user = JSON.parse(localStorage.getItem('earnNexUser'));
-    if (!user) {
-      window.location.href = 'index.html';
-    } else {
-      userPhoto.src = user.photoURL;
-      userName.textContent = user.name;
-      // Load coins from localStorage or default 0
-      coins = Number(localStorage.getItem('earnNexCoins_' + user.uid)) || 0;
-      coinCount.textContent = coins;
+    // User data
+    let currentUser = null;
+    let userData = {
+      balance: 25.50,
+      coins: 2550,
+      surveysCompleted: 12,
+      referrals: 5,
+      streak: 7,
+      lastBonusDate: null
+    };
 
-      // Referral link (example)
-      referralLink.value = window.location.origin + '/index.html?ref=' + user.uid;
+    // Sample survey data
+    const sampleSurveys = [
+      {
+        id: 1,
+        title: "Mobile App Usage Survey",
+        description: "Share your experience with mobile apps and earn rewards",
+        reward: 75,
+        time: "8 mins",
+        category: "Technology",
+        image: "mobile"
+      },
+      {
+        id: 2,
+        title: "Shopping Habits Research",
+        description: "Tell us about your online shopping preferences",
+        reward: 100,
+        time: "12 mins",
+        category: "Shopping",
+        image: "shopping"
+      },
+      {
+        id: 3,
+        title: "Social Media Preferences",
+        description: "How do you use social media platforms?",
+        reward: 60,
+        time: "6 mins",
+        category: "Social Media",
+        image: "social"
+      },
+      {
+        id: 4,
+        title: "Health & Wellness Study",
+        description: "Share your health routines and opinions",
+        reward: 120,
+        time: "15 mins",
+        category: "Health",
+        image: "health"
+      },
+      {
+        id: 5,
+        title: "Banking Services Feedback",
+        description: "Your opinion about digital banking services",
+        reward: 150,
+        time: "18 mins",
+        category: "Finance",
+        image: "finance"
+      },
+      {
+        id: 6,
+        title: "Entertainment Choices",
+        description: "What do you watch in your free time?",
+        reward: 50,
+        time: "5 mins",
+        category: "Entertainment",
+        image: "entertainment"
+      }
+    ];
+
+    // Initialize the app
+    function initApp() {
+      // Check auth state
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          currentUser = user;
+          updateUserInfo(user);
+          loadUserData(user.uid);
+          loadSurveys();
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+      
+      // Event listeners
+      logoutBtn.addEventListener('click', signOut);
+      dailyBonusBtn.addEventListener('click', claimDailyBonus);
+      copyReferralBtn.addEventListener('click', copyReferralLink);
     }
 
-    logoutBtn.addEventListener('click', () => {
-      auth.signOut().then(() => {
-        localStorage.removeItem('earnNexUser');
-        localStorage.removeItem('earnNexCoins_' + user.uid);
-        window.location.href = 'index.html';
-      });
-    });
+    // Update user info in UI
+    function updateUserInfo(user) {
+      userPhoto.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=4a90e2&color=fff`;
+      userName.textContent = user.displayName || 'User';
+      referralLink.value = `${window.location.origin}/index.html?ref=${user.uid}`;
+    }
 
-    dailyBonusBtn.addEventListener('click', () => {
-      const lastClaim = localStorage.getItem('earnNexDailyBonus_' + user.uid);
-      const today = new Date().toDateString();
-      if (lastClaim === today) {
-        alert('You already claimed today\'s bonus!');
+    // Load user data from Firestore
+    function loadUserData(userId) {
+      db.collection('users').doc(userId).get()
+        .then((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            userData = { ...userData, ...data };
+            updateDashboard();
+          } else {
+            // Create new user document if doesn't exist
+            db.collection('users').doc(userId).set({
+              balance: userData.balance,
+              coins: userData.coins,
+              surveysCompleted: userData.surveysCompleted,
+              referrals: userData.referrals,
+              streak: userData.streak,
+              lastBonusDate: null,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error loading user data:", error);
+        });
+    }
+
+    // Update dashboard with user data
+    function updateDashboard() {
+      balanceAmount.textContent = userData.balance.toFixed(2);
+      coinBalance.textContent = userData.coins;
+      totalSurveys.textContent = userData.surveysCompleted;
+      totalEarnings.textContent = `$${userData.balance.toFixed(2)}`;
+      totalReferrals.textContent = userData.referrals;
+      streakDays.textContent = userData.streak;
+      streakCount.textContent = userData.streak;
+      
+      // Check if daily bonus already claimed today
+      if (userData.lastBonusDate) {
+        const lastDate = new Date(userData.lastBonusDate.seconds * 1000);
+        const today = new Date();
+        if (lastDate.toDateString() === today.toDateString()) {
+          dailyBonusBtn.disabled = true;
+          dailyBonusBtn.innerHTML = '<i class="fas fa-check"></i> Bonus Claimed Today';
+        }
+      }
+    }
+
+    // Load surveys
+    function loadSurveys() {
+      surveyList.innerHTML = '';
+      
+      // In a real app, you would fetch from your API or Firestore
+      sampleSurveys.forEach(survey => {
+        const surveyCard = document.createElement('div');
+        surveyCard.className = 'survey-card';
+        surveyCard.innerHTML = `
+          <div class="survey-image">
+            <i class="fas fa-${getSurveyIcon(survey.image)} fa-3x"></i>
+          </div>
+          <div class="survey-body">
+            <h3 class="survey-title">${survey.title}</h3>
+            <p style="color: var(--secondary); font-size: 0.9rem; margin-bottom: 1rem">${survey.description}</p>
+            <div class="survey-meta">
+              <span><i class="far fa-clock"></i> ${survey.time}</span>
+              <span><i class="fas fa-tag"></i> ${survey.category}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="survey-reward">+${survey.reward} coins</div>
+              <button class="btn btn-primary" data-id="${survey.id}">
+                <i class="fas fa-play"></i> Start
+              </button>
+            </div>
+          </div>
+        `;
+        surveyList.appendChild(surveyCard);
+      });
+      
+      // Add event listeners to survey buttons
+      document.querySelectorAll('.survey-card button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const surveyId = e.target.getAttribute('data-id');
+          startSurvey(surveyId);
+        });
+      });
+    }
+
+    // Get icon for survey based on category
+    function getSurveyIcon(category) {
+      const icons = {
+        mobile: 'mobile-alt',
+        shopping: 'shopping-cart',
+        social: 'share-alt',
+        health: 'heartbeat',
+        finance: 'money-bill-wave',
+        entertainment: 'tv'
+      };
+      return icons[category] || 'poll';
+    }
+
+    // Start survey
+    function startSurvey(surveyId) {
+      // In a real app, this would redirect to the survey or show a modal
+      alert(`Starting survey ${surveyId}. In a real app, this would open the survey.`);
+      
+      // Simulate survey completion after delay
+      setTimeout(() => {
+        completeSurvey(surveyId);
+      }, 1000);
+    }
+
+    // Complete survey
+    function completeSurvey(surveyId) {
+      const survey = sampleSurveys.find(s => s.id == surveyId);
+      if (!survey) return;
+      
+      // Update user data
+      userData.coins += survey.reward;
+      userData.balance += survey.reward / 100;
+      userData.surveysCompleted++;
+      
+      // Update Firestore
+      db.collection('users').doc(currentUser.uid).update({
+        coins: userData.coins,
+        balance: userData.balance,
+        surveysCompleted: userData.surveysCompleted
+      })
+      .then(() => {
+        updateDashboard();
+        alert(`Survey completed! You earned ${survey.reward} coins.`);
+      })
+      .catch((error) => {
+        console.error("Error updating user data:", error);
+      });
+    }
+
+    // Claim daily bonus
+    function claimDailyBonus() {
+      const today = new Date();
+      const lastDate = userData.lastBonusDate ? new Date(userData.lastBonusDate.seconds * 1000) : null;
+      
+      // Check if bonus already claimed today
+      if (lastDate && lastDate.toDateString() === today.toDateString()) {
+        alert('You already claimed your bonus today!');
         return;
       }
-      coins += 10;
-      coinCount.textContent = coins;
-      localStorage.setItem('earnNexCoins_' + user.uid, coins);
-      localStorage.setItem('earnNexDailyBonus_' + user.uid, today);
-      alert('Daily bonus 10 coins added!');
-    });
+      
+      // Check if streak continues (last claim was yesterday)
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      if (lastDate && lastDate.toDateString() === yesterday.toDateString()) {
+        userData.streak++;
+      } else if (!lastDate || lastDate.toDateString() !== today.toDateString()) {
+        // Reset streak if broken
+        userData.streak = 1;
+      }
+      
+      // Calculate bonus (base 50 coins + 10 per streak day)
+      const bonus = 50 + (userData.streak * 10);
+      
+      // Update user data
+      userData.coins += bonus;
+      userData.balance += bonus / 100;
+      userData.lastBonusDate = firebase.firestore.Timestamp.fromDate(today);
+      
+      // Update Firestore
+      db.collection('users').doc(currentUser.uid).update({
+        coins: userData.coins,
+        balance: userData.balance,
+        streak: userData.streak,
+        lastBonusDate: userData.lastBonusDate
+      })
+      .then(() => {
+        updateDashboard();
+        dailyBonusBtn.disabled = true;
+        dailyBonusBtn.innerHTML = '<i class="fas fa-check"></i> Bonus Claimed Today';
+        alert(`Daily bonus claimed! You earned ${bonus} coins. Current streak: ${userData.streak} days.`);
+      })
+      .catch((error) => {
+        console.error("Error claiming daily bonus:", error);
+      });
+    }
 
-    copyReferralBtn.addEventListener('click', () => {
+    // Copy referral link
+    function copyReferralLink() {
       referralLink.select();
-      referralLink.setSelectionRange(0, 99999);
       document.execCommand('copy');
       alert('Referral link copied to clipboard!');
-    });
+    }
+
+    // Sign out
+    function signOut() {
+      auth.signOut()
+        .then(() => {
+          window.location.href = 'index.html';
+        })
+        .catch((error) => {
+          console.error("Error signing out:", error);
+        });
+    }
+
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>
